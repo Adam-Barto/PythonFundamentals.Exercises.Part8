@@ -3,6 +3,7 @@ import sys
 import logging
 
 print_to_file_path = 'tree.txt'
+user_input = sys.argv
 
 
 def print_out(to_print):
@@ -10,23 +11,26 @@ def print_out(to_print):
     print(to_print, file=f)
 
 
-def print_to_file(*file_path):
-    path = file_path[0][1]
+def print_to_file(path):
     for (root, dirs, file) in os.walk(path):
         print_out(str(root).replace(path, '.'))
 
 
-print_to_file(sys.argv)
+def file_checker(user_input: str) -> None:
+    file = None
+    try:
+        file = open(print_to_file_path)
+    except OSError as e:
+        print("Error opening the file. Please ensure the file exists and has appropriate permissions.")
+        logging.error(e)
+    else:
+        print_to_file(user_input)
+    finally:
+        file.close() if file else logging.warning("No file resource available to close.")
 
-## Exercise 2
 
-# Create a program called *tree.py*
-#
-# Given a file path (absolute or relative), the program should write to a file all of the contents of the directory and the child directories bellow it.
-# The output file should look something like this:
-#
-# ./file1.py
-# ./file2.py
-# ./dir1/file1_in_dir1.txt
-# ./dir1/file2_in_dir1.txt
-# ./dir3/file1_in_dir3.txt
+if len(user_input) > 1:
+    file_checker(user_input[1])
+else:
+    file_checker(os.curdir) # outprints a different directory then expected
+
